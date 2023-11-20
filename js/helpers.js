@@ -13,3 +13,59 @@ export const reformatDate = (dateStr) => {
     const [year, month, day] = dateStr.split('-');
     return `${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`;
 };
+
+export const animationNumber = (element, number) => {
+    const fps = 60;
+    const duration = 1000;
+    const frameDuration = duration / fps;
+    const totalFrame = Math.round(duration / frameDuration);
+
+    let currentFrame = 0;
+
+    const initialNumber = parseFloat(
+        element.textContent.replace(/[^0-9.-]+/g, '')
+    );
+
+    const increment = parseInt((number - initialNumber) / totalFrame);
+
+    const animate = () => {
+        currentFrame++;
+        const newNumber = initialNumber + increment * currentFrame
+        element.textContent = `${newNumber.toLocaleString('RU-ru')} ₽`;
+
+        if (currentFrame < totalFrame) {
+            requestAnimationFrame(animate);
+        } else {
+            element.textContent = `${number.toLocaleString('RU-ru')} ₽`;
+        }
+    };
+    requestAnimationFrame(animate);
+};
+/* another version
+export const animationNumber = (element, number) => {
+    const fps = 60;
+    const duration = 1000;
+    const frameDuration = duration / fps;
+    const totalFrame = Math.round(duration / frameDuration);
+
+    let currentFrame = 0;
+
+    const initialNumber = parseFloat(
+        element.textContent.replace(/[^0-9.-]+/g, '')
+    );
+
+    const increment = parseInt((number - initialNumber) / totalFrame);
+
+    const intervalId = setInterval(() => {
+        currentFrame++;
+
+        const newNumber = (initialNumber + increment) * currentFrame
+
+        element.textContent = `${newNumber.toLocaleString('RU-ru')} ₽`;
+
+        if (currentFrame === totalFrame) {
+            clearInterval(intervalId);
+            element.textContent = `${number.toLocaleString('RU-ru')} ₽`;
+        }
+    }, frameDuration);
+};*/
