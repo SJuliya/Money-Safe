@@ -3,18 +3,21 @@ import {delData, getData} from "./service.js";
 import {reformatDate} from "./helpers.js";
 import {storage} from "./storage.js";
 import {financeControl} from "./financeControl.js";
+import {generateChart} from "./generateChart.js";
 
 const typesOperation = {
     income: 'доход',
     expenses: 'расход',
 };
 
+let actualData = [];
+
 const reportBtn = document.querySelector('.finance__report');
 const report = document.querySelector('.report');
 const reportOperationList = document.querySelector('.report__operation-list');
 const reportTable = document.querySelector('.report__table');
 const reportDates = document.querySelector('.report__dates');
-const generateChartButton = document.querySelector('.generateChartButton');
+const generateChartButton = document.querySelector('#generateChartButton');
 
 const closeReport = ({target}) => {
     if (target.closest('.report__close') || (!target.closest('.report') && target !== reportBtn)) {
@@ -110,12 +113,12 @@ export const reportControl = () => {
         reportBtn.textContent = 'Загрузка';
         reportBtn.disabled = true;
 
-        const data = await getData('/finance');
-        storage.data = data;
+        actualData = await getData('/finance');
+        storage.data = actualData;
         reportBtn.textContent = textContent;
         reportBtn.disabled = false;
 
-        renderReport(data);
+        renderReport(actualData);
         openReport();
     });
 
@@ -133,14 +136,14 @@ export const reportControl = () => {
 
         const queryString = searchParams.toString();
         const url = queryString ? `/finance?${queryString}` : '/finance';
-        const data = await getData(url);
+        actualData = await getData(url);
 
-        renderReport(data);
+        renderReport(actualData);
     });
 };
 
 generateChartButton.addEventListener('click', () => {
-    generateChart(data);
+    generateChart(actualData);
 });
 
 OverlayScrollbars(report, {});
