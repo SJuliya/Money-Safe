@@ -1,7 +1,8 @@
 import {OverlayScrollbars} from "./overlayscrollbars.esm.min.js";
-import {getData} from "./service.js";
+import {delData, getData} from "./service.js";
 import {reformatDate} from "./helpers.js";
 import {storage} from "./storage.js";
+import {financeControl} from "./financeControl.js";
 
 const typesOperation = {
     income: 'доход',
@@ -13,6 +14,7 @@ const report = document.querySelector('.report');
 const reportOperationList = document.querySelector('.report__operation-list');
 const reportTable = document.querySelector('.report__table');
 const reportDates = document.querySelector('.report__dates');
+const generateChartButton = document.querySelector('.generateChartButton');
 
 const closeReport = ({target}) => {
     if (target.closest('.report__close') || (!target.closest('.report') && target !== reportBtn)) {
@@ -69,8 +71,7 @@ const renderReport = (data) => {
 };
 
 export const reportControl = () => {
-
-    reportTable.addEventListener('click', ({target}) => {
+    reportTable.addEventListener('click', async ({target}) => {
         const targetSort = target.closest('[data-sort]');
         if (targetSort) {
             const sortField = (targetSort.dataset.sort);
@@ -93,9 +94,14 @@ export const reportControl = () => {
             }
         }
 
-        const targetDel = target.closest("[data-del]");
+        const targetDel = target.closest('[data-del]');
         if (targetDel) {
-            console.log("-> target", targetDel.dataset.del);
+            await delData(`/finance/${targetDel.dataset.del}`)
+
+            const reportRow = targetDel.closest('.report__row');
+            reportRow.remove();
+            financeControl();
+            //clearChart();
         }
     });
 
@@ -132,5 +138,9 @@ export const reportControl = () => {
         renderReport(data);
     });
 };
+
+generateChartButton.addEventListener('click', () => {
+    generateChart(data);
+});
 
 OverlayScrollbars(report, {});
