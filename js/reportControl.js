@@ -3,7 +3,7 @@ import {delData, getData} from "./service.js";
 import {reformatDate} from "./helpers.js";
 import {storage} from "./storage.js";
 import {financeControl} from "./financeControl.js";
-import {generateChart} from "./generateChart.js";
+import {clearChart, generateChart} from "./generateChart.js";
 
 const typesOperation = {
     income: 'доход',
@@ -104,7 +104,7 @@ export const reportControl = () => {
             const reportRow = targetDel.closest('.report__row');
             reportRow.remove();
             financeControl();
-            //clearChart();
+            clearChart();
         }
     });
 
@@ -139,6 +139,7 @@ export const reportControl = () => {
         actualData = await getData(url);
 
         renderReport(actualData);
+        clearChart();
     });
 };
 

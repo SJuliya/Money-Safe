@@ -1,5 +1,7 @@
 const reportChart = document.querySelector('.report__chart');
 
+let myChart;
+
 export const clearChart = () => {
     reportChart.textContent = '';
 };
@@ -22,8 +24,42 @@ export const generateChart = (data) => {
         }, [0, []]
      );
 
+    const [a, b] = [0, 1];
+
     const [accIncome, incomeAmounts] = reduceOperationInDate(incomeData);
     const [accExpenses, expensesAmounts] = reduceOperationInDate(expensesData);
-    console.log(accExpenses, accIncome);
 
+    const balanceAmounts = incomeAmounts.map((income, i) => income - expensesAmounts[i]);
+
+    const canvasChart = document.createElement('canvas');
+    clearChart();
+    reportChart.append(canvasChart);
+
+    const ctx = canvasChart.getContext('2d');
+
+    if(myChart instanceof Chart) {
+        myChart.destroy();
+    }
+
+    myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartLabel,
+            datasets: [
+                {label:'Доходы', data:incomeAmounts, borderWidth:2, hidden:true},
+                {label:'Расходы', data:expensesAmounts, borderWidth:2, hidden:true},
+                {label:'Баланс', data:balanceAmounts, borderWidth:2, hidden:false},
+            ]
+        },
+        options: {
+            scales: {
+                y: {beginAtZero:true},
+            },
+            responsive: true,
+            plugins: {
+                title: {display:true, text:'График финансов'},
+                legend: {position:'top'},
+            },
+        },
+    });
 };
